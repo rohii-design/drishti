@@ -18,6 +18,8 @@ export const authService = {
     const response = await apiClient.post<ApiResponse<AuthResponseData>>('/auth/login', {
       email: credentials.email.trim().toLowerCase(),
       password: credentials.password,
+    }, {
+      timeout: 60000,
     })
 
     const authData = response.data.data

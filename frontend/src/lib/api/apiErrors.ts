@@ -57,6 +57,14 @@ export function normalizeApiError(error: unknown): AppApiError {
       return new AppApiError('Too many requests. Please wait before retrying.', 'RATE_LIMIT_EXCEEDED', 429)
     }
 
+    if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
+      return new AppApiError(
+        'The server is taking longer than expected to respond. It may be waking up after inactivity. Please try again.',
+        'REQUEST_TIMEOUT',
+        status
+      )
+    }
+
     if (error.code === 'ERR_NETWORK') {
       return new AppApiError(
         'Unable to connect to the DRISHTI server. Please verify your internet connection or backend server status.',
@@ -91,4 +99,3 @@ export function getErrorMessage(error: unknown, fallback: string = 'An unexpecte
   }
   return fallback
 }
-
