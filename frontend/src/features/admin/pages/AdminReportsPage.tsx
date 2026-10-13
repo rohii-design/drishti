@@ -18,6 +18,11 @@ import { EmptyState } from '@/components/feedback/EmptyState'
 import { adminService } from '../services/adminService'
 import type { AuditLogResponse } from '@/types/admin'
 
+const formatAuditDetails = (details?: AuditLogResponse['details']): string => {
+  if (!details || Object.keys(details).length === 0) return '—'
+  return JSON.stringify(details)
+}
+
 export const AdminReportsPage: React.FC = () => {
   const [logs, setLogs] = useState<AuditLogResponse[]>([])
   const [totalElements, setTotalElements] = useState<number>(0)
@@ -176,29 +181,32 @@ export const AdminReportsPage: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {logs.map((log) => (
-                      <tr key={log.id} className="hover:bg-slate-50/80 transition-colors">
-                        <td className="py-3 px-4 text-xs font-mono text-slate-500 whitespace-nowrap">
-                          {new Date(log.timestamp).toLocaleString()}
-                        </td>
-                        <td className="py-3 px-4">
-                          <p className="font-medium text-slate-900 text-xs">{log.actorEmail}</p>
-                          <Badge variant="neutral" size="sm" className="mt-0.5">{log.actorRole}</Badge>
-                        </td>
-                        <td className="py-3 px-4">
-                          <Badge variant="primary" size="sm" className="font-mono">{log.action}</Badge>
-                        </td>
-                        <td className="py-3 px-4 text-xs font-mono text-slate-600">
-                          {log.resourceType} {log.resourceId ? `(${log.resourceId.substring(0, 8)}...)` : ''}
-                        </td>
-                        <td className="py-3 px-4 text-xs font-mono text-slate-500">
-                          {log.ipAddress || '—'}
-                        </td>
-                        <td className="py-3 px-4 text-xs text-slate-600 max-w-xs truncate" title={log.details}>
-                          {log.details || '—'}
-                        </td>
-                      </tr>
-                    ))}
+                    {logs.map((log) => {
+                      const detailsText = formatAuditDetails(log.details)
+                      return (
+                        <tr key={log.id} className="hover:bg-slate-50/80 transition-colors">
+                          <td className="py-3 px-4 text-xs font-mono text-slate-500 whitespace-nowrap">
+                            {new Date(log.timestamp).toLocaleString()}
+                          </td>
+                          <td className="py-3 px-4">
+                            <p className="font-medium text-slate-900 text-xs">{log.actorEmail}</p>
+                            <Badge variant="neutral" size="sm" className="mt-0.5">{log.actorRole}</Badge>
+                          </td>
+                          <td className="py-3 px-4">
+                            <Badge variant="primary" size="sm" className="font-mono">{log.action}</Badge>
+                          </td>
+                          <td className="py-3 px-4 text-xs font-mono text-slate-600">
+                            {log.resourceType} {log.resourceId ? `(${log.resourceId.substring(0, 8)}...)` : ''}
+                          </td>
+                          <td className="py-3 px-4 text-xs font-mono text-slate-500">
+                            {log.ipAddress || '—'}
+                          </td>
+                          <td className="py-3 px-4 text-xs text-slate-600 max-w-xs truncate" title={detailsText}>
+                            {detailsText}
+                          </td>
+                        </tr>
+                      )
+                    })}
                   </tbody>
                 </table>
               </div>

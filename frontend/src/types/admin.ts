@@ -40,7 +40,7 @@ export interface AuditLogResponse {
   action: string
   resourceType: string
   resourceId?: string
-  details?: string
+  details?: Record<string, string>
   ipAddress?: string
   timestamp: string
 }
